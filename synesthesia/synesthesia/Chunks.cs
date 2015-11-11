@@ -16,8 +16,17 @@ namespace synesthesia
         }
     }
 
+    // Added for WAVEFORMATEXTENSIBLE
+    /*public enum WavChannelMask
+    {
+        SPEAKER_FRONT_LEFT = 0x1,
+        SPEAKER_FRONT_RIGHT = 0x2,
+        SPEAKER_FRONT_CENTER = 0x4
+    }*/
+
     public class WaveFormatChunk
     {
+        
         public string sChunkID;         // Four bytes: "fmt ".
         public uint dwChunkSize;        // Length of the header in bytes.
         public ushort wFormatTag;       // 1 (MS PCM)
@@ -26,17 +35,32 @@ namespace synesthesia
         public uint dwAvgBytesPerSec;   // For estimating RAM allocation
         public ushort wBlockAlign;      // Sample frame size in bytes.
         public ushort wBitsPerSample;   // Bits per sample.
+        /*public ushort cbSize;   // Added for WAVEFORMATEXTENSIBLE
+        public ushort Samples;  // Added for WAVEFORMATEXTENSIBLE
+        public ushort extraParamSize; // Added for WAVEFORMATEXTENSIBLE
+        public Guid subTypePCM;
+        public uint dwChannelMask;*/
+        /*
+            Note on dwChannelMask, it looks at the least significant bit and onward.
+            Left is 1, Right is 2, Center is 4. So using all 3 would be having all 
+            these bits turned on, thus dwChannelMask = 7.
+        */
 
         public WaveFormatChunk()
         {
             sChunkID = "fmt ";
-            dwChunkSize = 16;
-            wFormatTag = 1;
-            wChannels = 2;
+            dwChunkSize = 16;            // 16 for PCM, 40 for WAVEFORMATEXTENSIBLE
+            wFormatTag = 1;         // 1; 40 for regular PCM/non-WAVEFORMATEXTENSIBLE
+            wChannels = 1;
             dwSamplesPerSec = 44100;
             wBitsPerSample = 16;
-            wBlockAlign = (ushort)(wChannels * (wBitsPerSample) / 8);
-            dwAvgBytesPerSec = dwSamplesPerSec * wBlockAlign;
+            wBlockAlign = (ushort)(wChannels * (wBitsPerSample / 8));
+            dwAvgBytesPerSec = dwSamplesPerSec * wBlockAlign;   // Should this be also * wBitsPerSample / 8?
+            /*cbSize = 22;
+            Samples = 16;               // The precision of bits that have data (all of them).
+            extraParamSize = 22;
+            dwChannelMask = 0x7;
+            subTypePCM = new Guid("00000001-0000-0010-8000-00aa00389b71");*/
         }
     }
 

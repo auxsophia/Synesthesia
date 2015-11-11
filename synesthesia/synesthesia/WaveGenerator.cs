@@ -47,9 +47,12 @@ namespace synesthesia
                     // The "angle" used in the function, adjusted for the number of channels and sample rate.
                     // This value is like the period of the wave.
                     double t = (Math.PI * 2 * freq) / (format.dwSamplesPerSec * format.wChannels);
-
-                    for (uint i = 0; i < numSamples - 2; i++)
+                    Random rnd = new Random();
+                    for (uint i = 0; i < numSamples - 1; i++)
                     {
+                        /*data.shortArray[i + 1] = Convert.ToInt16(rnd.Next(-amplitude,amplitude));
+                        data.shortArray[i] = Convert.ToInt16(amplitude * Math.Sin(t * i));
+                        data.shortArray[i + 2] = Convert.ToInt16(amplitude * Math.Sin(t * i));*/
                         // Fill with a simple sine wave at max amplitude.
                         for (int channel = 0; channel < format.wChannels; channel++)
                         {
@@ -78,12 +81,12 @@ namespace synesthesia
             // Write the header:
             // .ToCharArray() converts the strings and eliminates the end-of-string characters which
             // would otherwise corrupt the headers.
-            writer.Write(header.sGroupId.ToCharArray());
+            writer.Write(header.sGroupId.ToCharArray());        // "RIFF"
             writer.Write(header.dwFileLength);
-            writer.Write(header.sRiffType.ToCharArray());
+            writer.Write(header.sRiffType.ToCharArray());       // "WAVE"
 
             // Write the format chunk:
-            writer.Write(format.sChunkID.ToCharArray());
+            writer.Write(format.sChunkID.ToCharArray());        // "fmt "
             writer.Write(format.dwChunkSize);
             writer.Write(format.wFormatTag);
             writer.Write(format.wChannels);
@@ -91,6 +94,12 @@ namespace synesthesia
             writer.Write(format.dwAvgBytesPerSec);
             writer.Write(format.wBlockAlign);
             writer.Write(format.wBitsPerSample);
+
+            // Write WAVEFORMATEXTENSIBLE
+            /*writer.Write(format.extraParamSize);
+            writer.Write(format.Samples);
+            writer.Write(format.dwChannelMask);
+            writer.Write(format.subTypePCM.ToByteArray());*/
 
             // Write the data chunk:
             writer.Write(data.sChunkID.ToCharArray());

@@ -70,13 +70,14 @@ namespace synesthesia
 
         private void waveGenerator_Click(object sender, EventArgs e)
         {
-            string filePath = @"C:\Users\onlyo\Music\Synesthesia\test.wave";
+            string filePath = @"C:\Users\onlyo\Music\Synesthesia\test.wav";
             WaveGenerator wave = new WaveGenerator(WaveExampleType.ExampleSineWave);
             wave.saveWave(filePath);
 
             SoundPlayer player = new SoundPlayer(filePath);
             MessageBox.Show("Play sound:");
             player.Play();
+            MessageBox.Show("Done!");
         }
 
         private void exit_Click(object sender, EventArgs e)
