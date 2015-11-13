@@ -25,11 +25,13 @@ namespace synesthesia
     {
         private Bitmap originalImage;
         private bool imageLoaded;
+        private string fileName;
 
         public Form1()
         {
             InitializeComponent();
             imageLoaded = false;
+            fileName = "";
         }
 
         private void loadImage_Click(object sender, EventArgs e)
@@ -70,14 +72,37 @@ namespace synesthesia
 
         private void waveGenerator_Click(object sender, EventArgs e)
         {
-            string filePath = @"C:\Users\onlyo\Music\Synesthesia\test.wav";
-            WaveGenerator wave = new WaveGenerator(WaveExampleType.ExampleSineWave);
-            wave.saveWave(filePath);
+            if (imageLoaded)
+            {
+                // Store the RGB values into a one dimensional array.
+                // f(x) = (x - 128) * 256
+                // f(x) gives us a range of (-32,768, 32,512) where x is a pixel RGB value.
+                // The range of a short is (–32,768, 32,767).
+                short[] waveData = new short[originalImage.Width * originalImage.Height * 3];
+                for (int i = 0; i < originalImage.Width; i++)
+                {
+                    for (int j = 0; j < originalImage.Height; j++)
+                    {
+                        Color pixel = originalImage.GetPixel(i, j);
+                        waveData[(originalImage.Height * i) + j] = (short)((pixel.B - 128) * 256);
+                        waveData[(originalImage.Height * i) + j + 1] = (short)((pixel.G - 128) * 256);
+                        waveData[(originalImage.Height * i) + j + 2] = (short)((pixel.B - 128) * 256);
+                    }
+                }
 
-            SoundPlayer player = new SoundPlayer(filePath);
-            MessageBox.Show("Play sound:");
-            player.Play();
-            MessageBox.Show("Done!");
+                string filePath = @"C:\Users\onlyo\Music\Synesthesia\test.wav";
+                WaveGenerator wave = new WaveGenerator(WaveExampleType.NaiveApproach, waveData);
+                wave.saveWave(filePath);
+
+                SoundPlayer player = new SoundPlayer(filePath);
+                MessageBox.Show("Play sound:");
+                player.Play();
+                //MessageBox.Show("Done!");
+            }
+            else
+            {
+                MessageBox.Show("Please load an image.");
+            }
         }
 
         private void exit_Click(object sender, EventArgs e)
