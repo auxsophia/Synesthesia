@@ -19,11 +19,11 @@ public enum WaveExampleType
 
 namespace synesthesia
 {
-    class WaveGenerator
+    public class WaveGenerator
     {
-        WaveHeader header;
-        WaveFormatChunk format;
-        WaveDataChunk data;
+        public WaveHeader header;
+        public WaveFormatChunk format;
+        public WaveDataChunk data;
 
         public WaveGenerator(WaveExampleType type, short [] waveData)
         {
@@ -71,14 +71,17 @@ namespace synesthesia
                     data.shortArray = new short[dataSize];
 
                     int nAmplitude = 32760;  // Max amplitude for 16-bit audio
-                    double nFreq = 554.37f;   // Concert A: 440Hz, Middle C# 277.18Hz, Middle-Right(?) C# 554.37Hz.
+                    double nFreq = 277.18f;   // Concert A: 440Hz, Middle C# 277.18Hz, Middle-Right(?) C# 554.37Hz.
 
                     // The "angle" used in the function, adjusted for the number of channels and sample rate.
                     // This value is like the period of the wave.
+                    double ti = (Math.PI * 2 * nFreq) / (format.dwSamplesPerSec * format.wChannels);
 
-                    for (uint i = 0; i < waveData.Length; i++)
+                    for (uint i = 0; i < waveData.Length - 3; i += 3)
                     {
-                            data.shortArray[i] = waveData[i];
+                        data.shortArray[i] = Convert.ToInt16(nAmplitude * Math.Sin(waveData[i]));
+                        data.shortArray[i + 1] = Convert.ToInt16(nAmplitude * Math.Sin(waveData[i + 1]));
+                        data.shortArray[i + 2] = Convert.ToInt16(nAmplitude * Math.Sin(waveData[i + 2]));
                     }
                     // Calculate data chunk size in bytes.
                     // The data chunk needs the bitrate which is stored in the format chunk,
