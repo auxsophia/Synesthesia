@@ -186,7 +186,9 @@ namespace synesthesia
                 int y = me.Location.Y + this.pictureDisplay.Location.Y;
 
                 Color pixel = originalImage.GetPixel(x, y);
-                MessageBox.Show("Red: " + pixel.R + " Green: " + pixel.G + " Blue: " + pixel.B);
+                DRGBNcolors color = new DRGBNcolors();
+                string found = color.findColor(pixel.R, pixel.G, pixel.B);
+                MessageBox.Show(found);
             }
         }
 

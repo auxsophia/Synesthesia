@@ -13,8 +13,30 @@ namespace test
 {
     public partial class Form1 : Form
     {
+        public struct DRGBName
+        {
+            double distance;
+            int red;
+            int green;
+            int blue;
+            string colorName;
 
+            public DRGBName(double d, int r, int g, int b, string name)
+            {
+                distance = d;
+                red = r;
+                green = g;
+                blue = b;
+                colorName = name;
+            }
+        }
 
+        static DRGBName[] colorTable = new DRGBName[3]
+        {
+            new DRGBName(1.0, 2, 2, 2, "Dark Grey"),
+            new DRGBName(2.9, 3, 18, 40, "Something"),
+            new DRGBName(5.9, 9, 255, 14, "Derp")
+        };
 
         public Form1()
         {
@@ -30,28 +52,7 @@ namespace test
 
         private void text_Click(object sender, EventArgs e)
         {
-            //Pass the file path and file name to the StreamReader constructor
-            string line;
-            StreamReader sr = new StreamReader("C:\\Users\\onlyo\\Music\\Synesthesia\\rgb.txt");
-
-            //Read the first line of text
-            line = sr.Read();
-            MessageBox.Show(line);
-            line = sr.ReadLine();
-            //Continue to read until you reach end of file
-            //while (line != null)
-            //{
-            //    //write the lie to console window
-            //    Console.WriteLine(line);
-            //    //Read the next line
-            //    line = sr.ReadLine();
-            //}
-
-            //close the file
-            sr.Close();
-            Console.ReadLine();
-
-            MessageBox.Show(line);
+            
         }
     }
 }
