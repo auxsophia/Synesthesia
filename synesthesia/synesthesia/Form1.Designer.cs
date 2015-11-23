@@ -66,7 +66,7 @@
             // 
             // pictureDisplay
             // 
-            this.pictureDisplay.Location = new System.Drawing.Point(272, 38);
+            this.pictureDisplay.Location = new System.Drawing.Point(275, 40);
             this.pictureDisplay.Name = "pictureDisplay";
             this.pictureDisplay.Size = new System.Drawing.Size(482, 373);
             this.pictureDisplay.TabIndex = 2;

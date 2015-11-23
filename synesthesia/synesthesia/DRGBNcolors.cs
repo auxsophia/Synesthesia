@@ -12,6 +12,7 @@ All rights reserved.
 
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -38,7 +39,7 @@ namespace synesthesia
         }
 
         // Sorted by distance from the origin.
-        public static DRGBName[] colorTable = new DRGBName[611]
+        public static DRGBName[] colorTable = new DRGBName[608]
         {
             new DRGBName(0, 0, 0, "black"),
             new DRGBName(0, 0, 128, "Navy Blue"),
@@ -620,7 +621,6 @@ namespace synesthesia
             new DRGBName(255, 20, 147, "deep pink"),
             new DRGBName(255, 211, 155, "burlywood1"),
             new DRGBName(255, 215, 0, "gold"),
-            new DRGBName(255, 215, 0, "gold1"),
             new DRGBName(255, 218, 185, "peach puff"),
             new DRGBName(255, 222, 173, "navajo white"),
             new DRGBName(255, 225, 255, "thistle1"),
@@ -642,8 +642,6 @@ namespace synesthesia
             new DRGBName(255, 255, 0, "yellow"),
             new DRGBName(255, 255, 224, "light yellow"),
             new DRGBName(255, 255, 240, "ivory"),
-            new DRGBName(255, 255, 255, "gray100"),
-            new DRGBName(255, 255, 255, "grey100"),
             new DRGBName(255, 255, 255, "white"),
             new DRGBName(255, 48, 48, "firebrick1"),
             new DRGBName(255, 52, 179, "maroon1"),
@@ -653,16 +651,10 @@ namespace synesthesia
             new DRGBName(255, 99, 71, "tomato")
         };
 
-        public void printStuff()
+        public void findColor(int R, int G, int B, int formX, int formY)
         {
-            MessageBox.Show(" Red: " + colorTable[0].red + " Green: " + colorTable[0].green + " Blue: " + colorTable[0].blue + " " + colorTable[0].colorName);
-            MessageBox.Show(" Red: " + colorTable[1].red + " Green: " + colorTable[1].green + " Blue: " + colorTable[1].blue + " " + colorTable[1].colorName);
-            MessageBox.Show(" Red: " + colorTable[2].red + " Green: " + colorTable[2].green + " Blue: " + colorTable[2].blue + " " + colorTable[2].colorName);
-        }
-
-        public string findColor(int R, int G, int B)
-        {
-            string color = "";
+            string region;
+            string colorName;
 
             // Determine the color region among ROYGBIV + WB
             if (R <= 128)
@@ -671,22 +663,22 @@ namespace synesthesia
                 {
                     if (B <= 128)
                     {
-                        color += "Black region: ";
+                        region = "Black region";
                     }
                     else
                     {
-                        color += "Blue region: ";
+                        region = "Blue region";
                     }
                 }
                 else
                 {
                     if (B <= 128)
                     {
-                        color += "Green region: ";
+                        region = "Green region";
                     }
                     else
                     {
-                        color += "Cyan region: ";
+                        region = "Cyan region";
                     }
                 }
             }
@@ -696,45 +688,52 @@ namespace synesthesia
                 {
                     if (B <= 128)
                     {
-                        color += "Red region: ";
+                        region = "Red region";
                     }
                     else
                     {
-                        color += "Magenta region: ";
+                        region = "Magenta region";
                     }
                 }
                 else
                 {
                     if (B <= 128)
                     {
-                        color += "Yellow region: ";
+                        region = "Yellow region";
                     }
                     else
                     {
-                        color += "White region: ";
+                        region = "White region";
                     }
                 }
             }
 
-            color += "the color has RGB = {" + R + "," + G + "," + B + "} and is ";
+            Color original = Color.FromArgb(R, G, B);
 
             // Calculate the distance from two points. 
-            // Initialize with the first color.
-            double minDistance = Math.Sqrt((R - colorTable[0].red)^2 + (G - colorTable[0].green)^2 + (B - colorTable[0].blue)^2);
-            double cDistance = minDistance;
-
+            double minDistance = 1;
+            double cDistance;
             int index = 0;
 
-            for (int i = 1; i < colorTable.Length; i++)
+            for (int i = 0; i < colorTable.Length; i++)
             {
-                cDistance = Math.Sqrt((R - colorTable[i].red)^2 + (G - colorTable[i].green)^2 + (B - colorTable[i].blue)^2);
-
-                if (0 == cDistance)
+                cDistance = Math.Sqrt(Math.Pow((R - colorTable[i].red), 2) + Math.Pow((G - colorTable[i].green), 2)
+                    + Math.Pow((B - colorTable[i].blue), 2));
+                if (0.0 == cDistance)
                 {   // Color found! The two points match!
-                    color += "precisely " + colorTable[i].colorName + "! RBG = {" + colorTable[i].red + "," + colorTable[i].green + "," + colorTable[i].blue + "}.";
-                    return color;
+                    colorName = colorTable[i].colorName;
+                    Form colorFormExact = new color(true, original, original, region, colorName);
+                    colorFormExact.Load += delegate
+                    {
+                        colorFormExact.Location = new Point(formX, formY);
+                    };
+                    colorFormExact.Show();
+                    return;
                 }
-
+                if (0 == i)
+                { // Initialize minDistance
+                    minDistance = cDistance;
+                }
                 if (cDistance < minDistance)
                 {   // New minimum.
                     minDistance = cDistance;
@@ -742,9 +741,20 @@ namespace synesthesia
                 }
             }
 
-            color += "most similar to " + colorTable[index].colorName + ", RGB = {" + colorTable[index].red + "," + colorTable[index].green  + "," + colorTable[index].blue + "}.";
+            cDistance = Math.Sqrt(Math.Pow((0), 2) + Math.Pow((0), 2)
+                    + Math.Pow((0), 2));
 
-            return color;
+            if (0.0 == cDistance) { MessageBox.Show("here!"); }
+
+            Color similar = Color.FromArgb(colorTable[index].red, colorTable[index].green, colorTable[index].blue);
+            colorName = colorTable[index].colorName;
+
+            Form colorFormSimilar = new color(false, original, similar, region, colorName);
+            colorFormSimilar.Load += delegate
+            {
+                colorFormSimilar.Location = new Point(formX, formY);
+            };
+            colorFormSimilar.Show();
         }
     }
 }

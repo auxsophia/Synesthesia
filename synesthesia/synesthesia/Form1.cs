@@ -182,13 +182,13 @@ namespace synesthesia
             {
                 // Get mouse coordinates relative to the pictureBox.
                 MouseEventArgs me = (MouseEventArgs)e;
-                int x = me.Location.X + this.pictureDisplay.Location.X; 
-                int y = me.Location.Y + this.pictureDisplay.Location.Y;
+                int x = me.Location.X; 
+                int y = me.Location.Y;
 
                 Color pixel = originalImage.GetPixel(x, y);
                 DRGBNcolors color = new DRGBNcolors();
-                string found = color.findColor(pixel.R, pixel.G, pixel.B);
-                MessageBox.Show(found);
+                color.findColor(pixel.R, pixel.G, pixel.B, this.Location.X + this.pictureDisplay.Location.X + x,
+                    this.Location.Y + this.pictureDisplay.Location.Y + y);
             }
         }
 
