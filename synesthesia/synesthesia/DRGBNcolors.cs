@@ -741,11 +741,6 @@ namespace synesthesia
                 }
             }
 
-            cDistance = Math.Sqrt(Math.Pow((0), 2) + Math.Pow((0), 2)
-                    + Math.Pow((0), 2));
-
-            if (0.0 == cDistance) { MessageBox.Show("here!"); }
-
             Color similar = Color.FromArgb(colorTable[index].red, colorTable[index].green, colorTable[index].blue);
             colorName = colorTable[index].colorName;
 

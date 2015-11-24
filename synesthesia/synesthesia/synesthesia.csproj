@@ -55,11 +55,11 @@
       <DependentUpon>color.cs</DependentUpon>
     </Compile>
     <Compile Include="DRGBNcolors.cs" />
-    <Compile Include="Form1.cs">
+    <Compile Include="Synesthete.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="Synesthete.Designer.cs">
+      <DependentUpon>Synesthete.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -67,8 +67,8 @@
     <EmbeddedResource Include="color.resx">
       <DependentUpon>color.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <EmbeddedResource Include="Synesthete.resx">
+      <DependentUpon>Synesthete.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
