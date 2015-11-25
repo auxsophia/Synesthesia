@@ -19,6 +19,7 @@ using System.Windows.Forms;
 using System.Drawing.Imaging;
 using System.Media;
 using System.Windows.Forms.DataVisualization.Charting;
+using System.IO;
 
 namespace synesthesia
 {
@@ -26,22 +27,22 @@ namespace synesthesia
     {
         private Bitmap originalImage;
         private bool imageLoaded;
+        private bool wavLoaded;
         private string fileName;            // Stores input from the user to give the wave file a title.
-        private Graphics graphic;           // Used for wave display.
-        private Bitmap graph;               // Used for wave display.
-        private uint waveWindow;            // Adjusts the viewing screen of the wave display.
+        private string wavPath;             // Stores the .wav file path.
         private WaveGenerator wave;         // Sound object.
 
         public Synesthete()
         {
             InitializeComponent();
             imageLoaded = false;
+            wavLoaded = false;
             fileName = "";
-            waveWindow = 0;
         }
 
         private void loadImage_Click(object sender, EventArgs e)
         {
+            openFileDialog.Filter = "Image Files(*.jpg;*.jpeg; *.gif; *.bmp; *.png;)|*.jpg;*.jpeg; *.gif; *.bmp; *.png";
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
                 try
@@ -76,6 +77,20 @@ namespace synesthesia
             }
         }
 
+        private void wavFile_Click(object sender, EventArgs e)
+        {
+            openFileDialog.Filter = "Image Files(*.wav)|*.wav";
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                wavPath = openFileDialog.FileName;
+                wavLoaded = true;
+            }
+            else
+            {
+                MessageBox.Show("Please load a .wav file.");
+            }
+        }
+
         private void waveGenerator_Click(object sender, EventArgs e)
         {
             if (imageLoaded)
@@ -100,6 +115,7 @@ namespace synesthesia
                 wave = new WaveGenerator(WaveExampleType.NaiveApproach, waveData);
                 wave.saveWave(filePath);
 
+                filePath = @"C:\Users\onlyo\Music\Sounds\hal.wav";
                 SoundPlayer player = new SoundPlayer(filePath);
                 MessageBox.Show("Play sound:");
                 player.Play();
@@ -167,5 +183,150 @@ namespace synesthesia
             Application.Exit();
         }
 
+        private void playLoadedWav_Click(object sender, EventArgs e)
+        {
+            SoundPlayer player = new SoundPlayer(@wavPath);
+            //MessageBox.Show("Play sound:");
+            player.Play();
+        }
+
+        private void encodeImage_Click(object sender, EventArgs e)
+        {
+            if (imageLoaded && wavLoaded)
+            {
+                // Get the entire wav file in bytes.
+                byte[] wav = File.ReadAllBytes(wavPath);
+
+                // Determine if mono channel, break otherwise.
+                int channels = wav[22];
+
+                if (1 != channels)
+                {
+                    MessageBox.Show("Wave files can only have mono (1 channel) sound.");
+                    return;
+                }
+
+                // Get past all the other sub chunks to get to the data subchunk:
+                int pos = 12;   // First Subchunk ID from 12 to 16
+
+                // Keep iterating until we find the data chunk (i.e. 64 61 74 61)
+                while (!(wav[pos] == 100 && wav[pos + 1] == 97 && wav[pos + 2] == 116 && wav[pos + 3] == 97))
+                {
+                    pos += 4;
+                    int chunkSize = wav[pos] + wav[pos + 1] * 256 + wav[pos + 2] * 65536 + wav[pos + 3] * 16777216;
+                    pos += 4 + chunkSize;
+                }
+                pos += 8;
+
+                // Pos is now positioned to start of actual sound data.
+                int samples = (wav.Length - pos) / 2;     // 2 bytes per sample (16 bit sound mono)
+                int leastSigBits = (originalImage.Width - 1) * (originalImage.Height - 1) * 3;
+
+                MessageBox.Show("This file is " + samples * 16 + " bits long in data, and " + leastSigBits + " can be stored in the image.");
+
+                // Begin encryption.
+
+                // Get each bit value for storage.
+                byte[] wavBits = new byte[(wav.Length - pos) * 8];
+
+                // 0000 0000, 0000 0001, 0000 0010, 0000 0100, 0000 1000.
+                byte nil = 0;
+                byte zero = 1;
+                byte one = 2;
+                byte two = 4;
+                byte three = 8;
+                byte four = 16;
+                byte five = 32;
+                byte six = 64;
+                byte seven = 128;
+
+                for (int i = 0, j = pos; j < wav.Length; i++, j++)
+                {
+                    // Store each value (0 or 1) for each byte starting from the most significant bit.
+                    wavBits[i * 8 + 7] = ((wav[j] & zero) == nil) ? nil : zero;
+                    wavBits[i * 8 + 6] = ((wav[j] & one) == nil) ? nil : zero;
+                    wavBits[i * 8 + 5] = ((wav[j] & two) == nil) ? nil : zero;
+                    wavBits[i * 8 + 4] = ((wav[j] & three) == nil) ? nil : zero;
+                    wavBits[i * 8 + 3] = ((wav[j] & four) == nil) ? nil : zero;
+                    wavBits[i * 8 + 2] = ((wav[j] & five) == nil) ? nil : zero;
+                    wavBits[i * 8 + 1] = ((wav[j] & six) == nil) ? nil : zero;
+                    wavBits[i * 8    ] = ((wav[j] & seven) == nil) ? nil : zero;
+                }
+
+                // Now encode each bit into the encrypted image.
+                Bitmap encrypted = new Bitmap(originalImage);
+
+                // New encrypted RGB:
+                int red;
+                int green;
+                int blue;
+                bool done = false;
+                for (int i = 0; (i < originalImage.Width) && !done; i++)
+                {
+                    for (int j = 0; j < originalImage.Height; j++)
+                    {
+                        if ((i * originalImage.Height + j) < wavBits.Length)
+                        {
+
+                            Color color = originalImage.GetPixel(i, j);
+
+                            // Red
+                            if ((color.R ^ wavBits[i * originalImage.Height + j]) % 2 == 0)
+                            {  // No change needed.
+                                red = color.R;
+                            }
+                            else
+                            {
+                                if (wavBits[i * originalImage.Height + j] == zero)
+                                    red = color.R + 1;
+                                else
+                                    red = color.R - 1;
+                            }
+
+                            // Green
+                            if ((color.G ^ wavBits[i * originalImage.Height + j]) % 2 == 0)
+                            {  // No change needed.
+                                green = color.G;
+                            }
+                            else
+                            {
+                                if (wavBits[i * originalImage.Height + j] == zero)
+                                    green = color.G + 1;
+                                else
+                                    green = color.G - 1;
+                            }
+
+                            // Blue
+                            if ((color.B ^ wavBits[i * originalImage.Height + j]) % 2 == 0)
+                            {  // No change needed.
+                                blue = color.B;
+                            }
+                            else
+                            {
+                                if (wavBits[i * originalImage.Height + j] == zero)
+                                    blue = color.B + 1;
+                                else
+                                    blue = color.B - 1;
+                            }
+
+                            Color encrypColor = Color.FromArgb(red, green, blue);
+                            encrypted.SetPixel(i, j, encrypColor);
+                        }
+                        else
+                        {   // Copy original pixel unchanged.
+                            encrypted.SetPixel(i, j, originalImage.GetPixel(i, j));
+                        }
+                    }
+                }
+
+                // Open the image in a new form.
+                Form encryptForm = new Encrypted(encrypted);
+                encryptForm.Show();
+            }
+            else
+            {
+                MessageBox.Show("Please load an image and .wav file");
+            }
+        }
     }
 }

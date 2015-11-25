@@ -33,7 +33,7 @@ namespace synesthesia
             dwChunkSize = 16;
             wFormatTag = 1;
             wChannels = 1;
-            dwSamplesPerSec = 44100;                    // 44.1k is the standard for CD's. We'll use 20k.
+            dwSamplesPerSec = 44100;                    // 44.1k is the standard for CD's.
             wBitsPerSample = 16;
             wBlockAlign = (ushort)(wChannels * (wBitsPerSample / 8));
             dwAvgBytesPerSec = dwSamplesPerSec * wBlockAlign;   // Should this be also * wBitsPerSample / 8?

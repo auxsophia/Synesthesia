@@ -36,6 +36,9 @@ namespace synesthesia
             this.pictureDisplay = new System.Windows.Forms.PictureBox();
             this.waveGenerator = new System.Windows.Forms.Button();
             this.pixelBox = new System.Windows.Forms.PictureBox();
+            this.wavFile = new System.Windows.Forms.Button();
+            this.playLoadedWav = new System.Windows.Forms.Button();
+            this.encodeImage = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureDisplay)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pixelBox)).BeginInit();
             this.SuspendLayout();
@@ -52,7 +55,7 @@ namespace synesthesia
             // 
             // exit
             // 
-            this.exit.Location = new System.Drawing.Point(12, 163);
+            this.exit.Location = new System.Drawing.Point(12, 271);
             this.exit.Name = "exit";
             this.exit.Size = new System.Drawing.Size(99, 23);
             this.exit.TabIndex = 1;
@@ -78,7 +81,7 @@ namespace synesthesia
             // 
             // waveGenerator
             // 
-            this.waveGenerator.Location = new System.Drawing.Point(12, 84);
+            this.waveGenerator.Location = new System.Drawing.Point(12, 189);
             this.waveGenerator.Name = "waveGenerator";
             this.waveGenerator.Size = new System.Drawing.Size(99, 37);
             this.waveGenerator.TabIndex = 3;
@@ -95,11 +98,44 @@ namespace synesthesia
             this.pixelBox.TabStop = false;
             this.pixelBox.Visible = false;
             // 
+            // wavFile
+            // 
+            this.wavFile.Location = new System.Drawing.Point(12, 79);
+            this.wavFile.Name = "wavFile";
+            this.wavFile.Size = new System.Drawing.Size(99, 23);
+            this.wavFile.TabIndex = 6;
+            this.wavFile.Text = "Load .wav file";
+            this.wavFile.UseVisualStyleBackColor = true;
+            this.wavFile.Click += new System.EventHandler(this.wavFile_Click);
+            // 
+            // playLoadedWav
+            // 
+            this.playLoadedWav.Location = new System.Drawing.Point(12, 109);
+            this.playLoadedWav.Name = "playLoadedWav";
+            this.playLoadedWav.Size = new System.Drawing.Size(99, 23);
+            this.playLoadedWav.TabIndex = 7;
+            this.playLoadedWav.Text = "Play .wav file";
+            this.playLoadedWav.UseVisualStyleBackColor = true;
+            this.playLoadedWav.Click += new System.EventHandler(this.playLoadedWav_Click);
+            // 
+            // encodeImage
+            // 
+            this.encodeImage.Location = new System.Drawing.Point(13, 139);
+            this.encodeImage.Name = "encodeImage";
+            this.encodeImage.Size = new System.Drawing.Size(98, 23);
+            this.encodeImage.TabIndex = 8;
+            this.encodeImage.Text = "Encode Image";
+            this.encodeImage.UseVisualStyleBackColor = true;
+            this.encodeImage.Click += new System.EventHandler(this.encodeImage_Click);
+            // 
             // Synesthete
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(878, 438);
+            this.Controls.Add(this.encodeImage);
+            this.Controls.Add(this.playLoadedWav);
+            this.Controls.Add(this.wavFile);
             this.Controls.Add(this.pixelBox);
             this.Controls.Add(this.waveGenerator);
             this.Controls.Add(this.pictureDisplay);
@@ -121,6 +157,9 @@ namespace synesthesia
         private System.Windows.Forms.PictureBox pictureDisplay;
         private System.Windows.Forms.Button waveGenerator;
         private System.Windows.Forms.PictureBox pixelBox;
+        private System.Windows.Forms.Button wavFile;
+        private System.Windows.Forms.Button playLoadedWav;
+        private System.Windows.Forms.Button encodeImage;
     }
 }
 

@@ -55,6 +55,12 @@
       <DependentUpon>color.cs</DependentUpon>
     </Compile>
     <Compile Include="DRGBNcolors.cs" />
+    <Compile Include="Encrypted.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Encrypted.Designer.cs">
+      <DependentUpon>Encrypted.cs</DependentUpon>
+    </Compile>
     <Compile Include="Synesthete.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -66,6 +72,9 @@
     <Compile Include="WaveGenerator.cs" />
     <EmbeddedResource Include="color.resx">
       <DependentUpon>color.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Encrypted.resx">
+      <DependentUpon>Encrypted.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Synesthete.resx">
       <DependentUpon>Synesthete.cs</DependentUpon>
