@@ -27,7 +27,7 @@ namespace synesthesia
         public ushort wBlockAlign;      // Sample frame size in bytes.
         public ushort wBitsPerSample;   // Bits per sample.
 
-        public WaveFormatChunk()
+        public WaveFormatChunk(short one)
         {
             sChunkID = "fmt ";
             dwChunkSize = 16;
@@ -38,6 +38,18 @@ namespace synesthesia
             wBlockAlign = (ushort)(wChannels * (wBitsPerSample / 8));
             dwAvgBytesPerSec = dwSamplesPerSec * wBlockAlign;   // Should this be also * wBitsPerSample / 8?
         }
+
+        public WaveFormatChunk(byte one)
+        {
+            sChunkID = "fmt ";
+            dwChunkSize = 16;
+            wFormatTag = 1;
+            wChannels = 1;
+            dwSamplesPerSec = 44100;                    // 44.1k is the standard for CD's.
+            wBitsPerSample = 8;
+            wBlockAlign = (ushort)(wChannels * (wBitsPerSample / 8));
+            dwAvgBytesPerSec = dwSamplesPerSec * wBlockAlign;
+        }
     }
 
     public class WaveDataChunk
@@ -46,11 +58,20 @@ namespace synesthesia
         public uint dwChunkSize;    // Length of the header in bytes.
         public short[] shortArray;  // Short, because we are using shorts. If we wanted 8-bit, byte.
                                     // 32 bit would be int.
-        public WaveDataChunk()
+        public byte[] byteArray;
+        
+        public WaveDataChunk(short one)
         {
             sChunkID = "data";
             dwChunkSize = 0;
             shortArray = new short[0];
+        }
+
+        public WaveDataChunk(byte one)
+        {
+            sChunkID = "data";
+            dwChunkSize = 0;
+            byteArray = new byte[0];
         }
     }
 }

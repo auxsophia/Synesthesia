@@ -95,27 +95,8 @@ namespace synesthesia
         {
             if (imageLoaded)
             {
-                // Store the RGB values into a one dimensional array.
-                // f(x) = (x - 128) * 256
-                // f(x) gives us a range of (-32,768, 32,512) where x is a pixel RGB value.
-                // The range of a short is (–32,768, 32,767).
-                short[] waveData = new short[originalImage.Width * originalImage.Height * 3];
-                for (int i = 0; i < originalImage.Width; i++)
-                {
-                    for (int j = 0; j < originalImage.Height; j++)
-                    {
-                        Color pixel = originalImage.GetPixel(i, j);
-                        waveData[(originalImage.Height * i) + j]     = (short)((pixel.R - 128) * 256);
-                        waveData[(originalImage.Height * i) + j + 1] = (short)((pixel.G - 128) * 256);
-                        waveData[(originalImage.Height * i) + j + 2] = (short)((pixel.B - 128) * 256);
-                    }
-                }
-
                 string filePath = @"C:\Users\onlyo\Music\Synesthesia\test.wav";
-                wave = new WaveGenerator(WaveExampleType.NaiveApproach, waveData);
-                wave.saveWave(filePath);
 
-                filePath = @"C:\Users\onlyo\Music\Sounds\hal.wav";
                 SoundPlayer player = new SoundPlayer(filePath);
                 MessageBox.Show("Play sound:");
                 player.Play();
@@ -194,63 +175,119 @@ namespace synesthesia
         {
             if (imageLoaded && wavLoaded)
             {
-                // Get the entire wav file in bytes.
-                byte[] wav = File.ReadAllBytes(wavPath);
+                System.IO.Stream waveFile = new System.IO.FileStream(@wavPath, System.IO.FileMode.Open);
+                BinaryReader reader = new BinaryReader(waveFile);
 
-                // Determine if mono channel, break otherwise.
-                int channels = wav[22];
+                int chunkID = reader.ReadInt32();
+                int fileSize = reader.ReadInt32();
+                int riffType = reader.ReadInt32();
+                int fmtID = reader.ReadInt32();
+                int fmtSize = reader.ReadInt32();
+                int fmtCode = reader.ReadInt16();
+                int channels = reader.ReadInt16();
+                int sampleRate = reader.ReadInt32();        // Will be written to the image (4 bytes)
+                int fmtAvgBPS = reader.ReadInt32();         // Will be written to the image (4 bytes)
+                int fmtBlockAlign = reader.ReadInt16();     // Will be written to the image (2 bytes)
+                int bitDepth = reader.ReadInt16();          // Will be written to the image (2 bytes)
 
-                if (1 != channels)
+                if (channels != 1)
                 {
-                    MessageBox.Show("Wave files can only have mono (1 channel) sound.");
+                    MessageBox.Show("Only mono (single channel) sound is supported at this time.");
                     return;
                 }
 
-                // Get past all the other sub chunks to get to the data subchunk:
-                int pos = 12;   // First Subchunk ID from 12 to 16
-
-                // Keep iterating until we find the data chunk (i.e. 64 61 74 61)
-                while (!(wav[pos] == 100 && wav[pos + 1] == 97 && wav[pos + 2] == 116 && wav[pos + 3] == 97))
+                if (fmtSize == 18)
                 {
-                    pos += 4;
-                    int chunkSize = wav[pos] + wav[pos + 1] * 256 + wav[pos + 2] * 65536 + wav[pos + 3] * 16777216;
-                    pos += 4 + chunkSize;
+                    // Read any extra values
+                    int fmtExtraSize = reader.ReadInt16();
+                    reader.ReadBytes(fmtExtraSize);
                 }
-                pos += 8;
 
-                // Pos is now positioned to start of actual sound data.
-                int samples = (wav.Length - pos) / 2;     // 2 bytes per sample (16 bit sound mono)
+                int dataID = reader.ReadInt32();
+                int dataSize = reader.ReadInt32();          // Will be modified and written to the image (4 bytes)
+
+                byte[] wav = reader.ReadBytes(dataSize);
+
+                int numOfBits = (wav.Length - 1) * 8 + 128; // 128 = 16 bytes of header information.
                 int leastSigBits = (originalImage.Width - 1) * (originalImage.Height - 1) * 3;
 
-                MessageBox.Show("This file is " + samples * 16 + " bits long in data, and " + leastSigBits + " can be stored in the image.");
+                if (numOfBits > leastSigBits)
+                {
+                    MessageBox.Show("This file is " + numOfBits + " bits long in data, and " + leastSigBits + 
+                        " can be stored in the image.\n" + "Your .wav file will be truncated.");
+                    numOfBits = leastSigBits;
+                }
 
                 // Begin encryption.
 
-                // Get each bit value for storage.
-                byte[] wavBits = new byte[(wav.Length - pos) * 8];
-
-                // 0000 0000, 0000 0001, 0000 0010, 0000 0100, 0000 1000.
+                // Comparison bytes.
+                // 0000 0000, 0000 0001
                 byte nil = 0;
                 byte zero = 1;
-                byte one = 2;
-                byte two = 4;
-                byte three = 8;
-                byte four = 16;
-                byte five = 32;
-                byte six = 64;
-                byte seven = 128;
 
-                for (int i = 0, j = pos; j < wav.Length; i++, j++)
+                // Get each bit value for storage.
+                byte[] wavBits = new byte[numOfBits];
+
+                // Encode the header information.
+                dataSize += 16;     // The data length plus the bites of header information.
+
+                uint bitIsolate = 2147483648; // 1000 0000 0000 0000 0000 0000 0000 0000
+                int wavBitsIndex = 0;
+                while (bitIsolate != 0)
+                {
+                    wavBits[wavBitsIndex] = ((dataSize & bitIsolate) == nil) ? nil : zero;
+                    wavBitsIndex++;
+                    bitIsolate /= 2;    // Gets to the next most significant bit.
+                }
+
+                // Store the sampleRate.
+                bitIsolate = 2147483648;
+                while (bitIsolate != 0)
+                {
+                    wavBits[wavBitsIndex] = ((sampleRate & bitIsolate) == nil) ? nil : zero;
+                    wavBitsIndex++;
+                    bitIsolate /= 2;    // Gets to the next most significant bit.
+                }
+
+                // Store the fmtAvgBPS.
+                bitIsolate = 2147483648;
+                while (bitIsolate != 0)
+                {
+                    wavBits[wavBitsIndex] = ((fmtAvgBPS & bitIsolate) == nil) ? nil : zero;
+                    wavBitsIndex++;
+                    bitIsolate /= 2;    // Gets to the next most significant bit.
+                }
+
+                // Store the fmtBlockAlign (2 bytes).
+                bitIsolate = 32768;
+                while (bitIsolate != 0)
+                {
+                    wavBits[wavBitsIndex] = ((fmtBlockAlign & bitIsolate) == nil) ? nil : zero;
+                    wavBitsIndex++;
+                    bitIsolate /= 2;    // Gets to the next most significant bit.
+                }
+
+                // Store the bitDepth (2 bytes).
+                bitIsolate = 32768;
+                while (bitIsolate != 0)
+                {
+                    wavBits[wavBitsIndex] = ((bitDepth & bitIsolate) == nil) ? nil : zero;
+                    wavBitsIndex++;
+                    bitIsolate /= 2;    // Gets to the next most significant bit.
+                }
+
+                // Encode the wave data.
+                bitIsolate = 128;
+                for (int i = 0; wavBitsIndex < wavBits.Length; wavBitsIndex++)
                 {
                     // Store each value (0 or 1) for each byte starting from the most significant bit.
-                    wavBits[i * 8 + 7] = ((wav[j] & zero) == nil) ? nil : zero;
-                    wavBits[i * 8 + 6] = ((wav[j] & one) == nil) ? nil : zero;
-                    wavBits[i * 8 + 5] = ((wav[j] & two) == nil) ? nil : zero;
-                    wavBits[i * 8 + 4] = ((wav[j] & three) == nil) ? nil : zero;
-                    wavBits[i * 8 + 3] = ((wav[j] & four) == nil) ? nil : zero;
-                    wavBits[i * 8 + 2] = ((wav[j] & five) == nil) ? nil : zero;
-                    wavBits[i * 8 + 1] = ((wav[j] & six) == nil) ? nil : zero;
-                    wavBits[i * 8    ] = ((wav[j] & seven) == nil) ? nil : zero;
+                    wavBits[wavBitsIndex] = ((wav[i] & bitIsolate) == nil) ? nil : zero;
+                    bitIsolate /= 2;
+                    if (0 == bitIsolate)
+                    {
+                        bitIsolate = 128;
+                        i++;
+                    }
                 }
 
                 // Now encode each bit into the encrypted image.
@@ -260,54 +297,58 @@ namespace synesthesia
                 int red;
                 int green;
                 int blue;
-                bool done = false;
-                for (int i = 0; (i < originalImage.Width) && !done; i++)
+                int k = 0;
+                for (int i = 0; i < originalImage.Width; i++)
                 {
                     for (int j = 0; j < originalImage.Height; j++)
                     {
-                        if ((i * originalImage.Height + j) < wavBits.Length)
+                        // It's before the end of the wav data and before the last 3 pixels of the image.
+                        if (k < wavBits.Length)
                         {
 
                             Color color = originalImage.GetPixel(i, j);
 
                             // Red
-                            if ((color.R ^ wavBits[i * originalImage.Height + j]) % 2 == 0)
+                            if ((color.R ^ wavBits[k]) % 2 == 0)
                             {  // No change needed.
                                 red = color.R;
                             }
                             else
                             {
-                                if (wavBits[i * originalImage.Height + j] == zero)
+                                if (wavBits[k] == zero)
                                     red = color.R + 1;
                                 else
                                     red = color.R - 1;
                             }
 
+                            k++;
                             // Green
-                            if ((color.G ^ wavBits[i * originalImage.Height + j]) % 2 == 0)
+                            if ((color.G ^ wavBits[k]) % 2 == 0)
                             {  // No change needed.
                                 green = color.G;
                             }
                             else
                             {
-                                if (wavBits[i * originalImage.Height + j] == zero)
+                                if (wavBits[k] == zero)
                                     green = color.G + 1;
                                 else
                                     green = color.G - 1;
                             }
 
+                            k++;
                             // Blue
-                            if ((color.B ^ wavBits[i * originalImage.Height + j]) % 2 == 0)
+                            if ((color.B ^ wavBits[k]) % 2 == 0)
                             {  // No change needed.
                                 blue = color.B;
                             }
                             else
                             {
-                                if (wavBits[i * originalImage.Height + j] == zero)
+                                if (wavBits[k] == zero)
                                     blue = color.B + 1;
                                 else
                                     blue = color.B - 1;
                             }
+                            k++;
 
                             Color encrypColor = Color.FromArgb(red, green, blue);
                             encrypted.SetPixel(i, j, encrypColor);
