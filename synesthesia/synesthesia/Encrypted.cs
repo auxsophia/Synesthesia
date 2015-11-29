@@ -68,23 +68,21 @@ namespace synesthesia
             int dataSize = 0;
             byte zero = 1;
             int bitShift = 31;
-            for (int i = 0, j = 0; j < 12; j++)
+            for (int i = 0, j = 0; j < 11; j++)
             {
                 Color color = ((Bitmap)(encryptedImageBox.Image)).GetPixel(i, j);
-                dataSize += (color.R & zero) << bitShift;
+                dataSize += ((color.R & zero) << bitShift);
                 bitShift--;
 
-                dataSize += (color.G & zero) << bitShift;
+                dataSize += ((color.G & zero) << bitShift);
                 bitShift--;
 
                 if (11 != j)
                 {
-                    dataSize += (color.B & zero) << bitShift;
+                    dataSize += ((color.B & zero) << bitShift);
                     bitShift--;
                 }
             }
-
-            dataSize -= 16;
 
             if (dataSize > (encryptedImageBox.Width * encryptedImageBox.Height) || dataSize < 128)
             {
@@ -94,26 +92,26 @@ namespace synesthesia
             // Get the sample rate.
             int sampleRate = 0;
             bitShift = 31;
-            for (int i = 0, j = 11; j < 23; j++)
+            for (int i = 0, j = 10; j < 22; j++)
             {
                 Color color = ((Bitmap)(encryptedImageBox.Image)).GetPixel(i, j);
-                if (11 == j)
+                if (10 == j)
                 {
-                    sampleRate = (color.B & zero) << bitShift;
+                    sampleRate = ((color.B & zero) << bitShift);
                     bitShift--;
                 }
-                else if (22 == j)
+                else if (21 == j)
                 {
-                    sampleRate += (color.R & zero) << bitShift;
+                    sampleRate += ((color.R & zero) << bitShift);
                     bitShift--;
                 }
                 else
                 {
-                    sampleRate += (color.R & zero) << bitShift;
+                    sampleRate += ((color.R & zero) << bitShift);
                     bitShift--;
-                    sampleRate += (color.G & zero) << bitShift;
+                    sampleRate += ((color.G & zero) << bitShift);
                     bitShift--;
-                    sampleRate += (color.B & zero) << bitShift;
+                    sampleRate += ((color.B & zero) << bitShift);
                     bitShift--;
                 }
             }
@@ -121,23 +119,23 @@ namespace synesthesia
             // Get the average bytes per second.
             int fmtAvgBPS = 0;
             bitShift = 31;
-            for (int i = 0, j = 22; j < 33; j++)
+            for (int i = 0, j = 21; j < 32; j++)
             {
                 Color color = ((Bitmap)(encryptedImageBox.Image)).GetPixel(i, j);
-                if (22 == j)
+                if (21 == j)
                 {
-                    fmtAvgBPS = (color.G & zero) << bitShift;
+                    fmtAvgBPS = ((color.G & zero) << bitShift);
                     bitShift--;
-                    fmtAvgBPS = (color.B & zero) << bitShift;
+                    fmtAvgBPS = ((color.B & zero) << bitShift);
                     bitShift--;
                 }
                 else
                 {
-                    fmtAvgBPS += (color.R & zero) << bitShift;
+                    fmtAvgBPS += ((color.R & zero) << bitShift);
                     bitShift--;
-                    fmtAvgBPS += (color.G & zero) << bitShift;
+                    fmtAvgBPS += ((color.G & zero) << bitShift);
                     bitShift--;
-                    fmtAvgBPS += (color.B & zero) << bitShift;
+                    fmtAvgBPS += ((color.B & zero) << bitShift);
                     bitShift--;
                 }
             }
@@ -145,18 +143,18 @@ namespace synesthesia
             // Get the block align.
             int blockAlign = 0;
             bitShift = 15;
-            for (int i = 0, j = 33; j < 39; j++)
+            for (int i = 0, j = 32; j < 38; j++)
             {
                 Color color = ((Bitmap)(encryptedImageBox.Image)).GetPixel(i, j);
-                blockAlign += (color.R & zero) << bitShift;
+                blockAlign += ((color.R & zero) << bitShift);
                 bitShift--;
 
-                if (38 != j)
+                if (37 != j)
                 {
-                    blockAlign += (color.G & zero) << bitShift;
+                    blockAlign += ((color.G & zero) << bitShift);
                     bitShift--;
 
-                    blockAlign += (color.B & zero) << bitShift;
+                    blockAlign += ((color.B & zero) << bitShift);
                     bitShift--;
                 }
             }
@@ -164,35 +162,35 @@ namespace synesthesia
             // Get the bit depth.
             int bitDepth = 0;
             bitShift = 15;
-            for (int i = 0, j = 38; j < 44; j++)
+            for (int i = 0, j = 37; j < 43; j++)
             {
                 Color color = ((Bitmap)(encryptedImageBox.Image)).GetPixel(i, j);
 
-                if (38 == j)
+                if (37 == j)
                 {
-                    bitDepth += (color.G & zero) << bitShift;
+                    bitDepth += ((color.G & zero) << bitShift);
                     bitShift--;
 
-                    bitDepth += (color.B & zero) << bitShift;
+                    bitDepth += ((color.B & zero) << bitShift);
                     bitShift--;
                 }
-                else if (43 == j)
+                else if (42 == j)
                 {
-                    bitDepth += (color.R & zero) << bitShift;
+                    bitDepth += ((color.R & zero) << bitShift);
                     bitShift--;
 
-                    bitDepth += (color.G & zero) << bitShift;
+                    bitDepth += ((color.G & zero) << bitShift);
                     bitShift--;
                 }
                 else
                 {
-                    bitDepth += (color.R & zero) << bitShift;
+                    bitDepth += ((color.R & zero) << bitShift);
                     bitShift--;
 
-                    bitDepth += (color.G & zero) << bitShift;
+                    bitDepth += ((color.G & zero) << bitShift);
                     bitShift--;
 
-                    bitDepth += (color.B & zero) << bitShift;
+                    bitDepth += ((color.B & zero) << bitShift);
                     bitShift--;
                 }
             }
@@ -211,12 +209,13 @@ namespace synesthesia
                 dataSize /= 2;      // Divide by two for shorts.
                 for (int i = 0; i < encryptedImageBox.Image.Width; i++)
                 {
-                    for (int j = 43; j < encryptedImageBox.Image.Height && wavIndex != dataSize; j++)
+                    for (int j = 0; j < encryptedImageBox.Image.Height && wavIndex != dataSize; j++)
                     {
                         Color pixel = ((Bitmap)(encryptedImageBox.Image)).GetPixel(i, j);
 
-                        if (43 == j)
-                        {
+                        if (0 == i && 0 == j)
+                        {   // Get the first bit of data, not the header information.
+                            j = 42;
                             waveData[wavIndex] += (short)((pixel.B & zero) << shift);
                             shift--;
                         }
@@ -268,12 +267,13 @@ namespace synesthesia
                 int wavIndex = 0;
                 for (int i = 0; i < encryptedImageBox.Image.Width; i++)
                 {
-                    for (int j = 43; j < encryptedImageBox.Image.Height && wavIndex != dataSize; j++)
+                    for (int j = 0; j < encryptedImageBox.Image.Height && wavIndex != dataSize; j++)
                     {
                         Color pixel = ((Bitmap)(encryptedImageBox.Image)).GetPixel(i, j);
 
-                        if (43 == j)
-                        {
+                        if (0 == i && 0 == j)
+                        {   // Get the first bit of data, not the header information.
+                            j = 42;
                             waveData[wavIndex] += (byte)((pixel.B & zero) << shift);
                             shift--;
                         }

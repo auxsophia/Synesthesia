@@ -103,6 +103,9 @@ namespace synesthesia
             }
             else
             {
+                int test = 11025;
+                test = test << 3;
+                MessageBox.Show("" + test);
                 MessageBox.Show("Please load an image.");
             }
         }
@@ -204,11 +207,11 @@ namespace synesthesia
                 }
 
                 int dataID = reader.ReadInt32();
-                int dataSize = reader.ReadInt32();          // Will be modified and written to the image (4 bytes)
+                int dataSize = reader.ReadInt32();              // Will be written to the image (4 bytes)
 
                 byte[] wav = reader.ReadBytes(dataSize);
 
-                int numOfBits = (wav.Length - 1) * 8 + 128; // 128 = 16 bytes of header information.
+                int numOfBits = (wav.Length - 1) * 8 + 128;     // 128 = 16 bytes of header information.
                 int leastSigBits = (originalImage.Width - 1) * (originalImage.Height - 1) * 3;
 
                 if (numOfBits > leastSigBits)
@@ -229,8 +232,6 @@ namespace synesthesia
                 byte[] wavBits = new byte[numOfBits];
 
                 // Encode the header information.
-                dataSize += 16;     // The data length plus the bites of header information.
-
                 uint bitIsolate = 2147483648; // 1000 0000 0000 0000 0000 0000 0000 0000
                 int wavBitsIndex = 0;
                 while (bitIsolate != 0)
@@ -303,7 +304,7 @@ namespace synesthesia
                     for (int j = 0; j < originalImage.Height; j++)
                     {
                         // It's before the end of the wav data and before the last 3 pixels of the image.
-                        if (k < wavBits.Length)
+                        if (k + 3 < wavBits.Length)
                         {
 
                             Color color = originalImage.GetPixel(i, j);

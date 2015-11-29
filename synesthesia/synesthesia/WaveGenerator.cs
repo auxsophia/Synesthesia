@@ -121,9 +121,21 @@ namespace synesthesia
             // Write the data chunk:
             writer.Write(data.sChunkID.ToCharArray());
             writer.Write(data.dwChunkSize);
-            foreach(short dataPoint in data.shortArray)
+
+            if (16 == format.wBitsPerSample)
             {
-                writer.Write(dataPoint);
+                foreach (short dataPoint in data.shortArray)
+                {
+                    writer.Write(dataPoint);
+                }
+            }
+
+            if (8 == format.wBitsPerSample)
+            {
+                foreach (byte dataPoint in data.byteArray)
+                {
+                    writer.Write(dataPoint);
+                }
             }
 
             // Now that we know the length of the file, we go back and specify it as the 
