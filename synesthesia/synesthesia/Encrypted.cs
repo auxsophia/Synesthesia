@@ -253,7 +253,8 @@ namespace synesthesia
 
                 // Create the .wav file.
                 string filePath16 = @"C:\Users\onlyo\OneDrive\Pictures\SeniorDesign\tempWavs\temp.wav";
-                WaveGenerator wave = new WaveGenerator(WaveExampleType.Decrypt, waveData, (uint)sampleRate);
+                WaveGenerator wave = new WaveGenerator(WaveExampleType.Decrypt, waveData);
+                wave.format.dwSamplesPerSec = (uint)sampleRate;
                 wave.format.dwAvgBytesPerSec = (uint)fmtAvgBPS;
                 wave.format.wBlockAlign = (ushort)blockAlign;
                 wave.format.wBitsPerSample = (ushort)bitDepth;
@@ -311,7 +312,8 @@ namespace synesthesia
 
                 // Create the .wav file.
                 string filePath8 = @"C:\Users\onlyo\OneDrive\Pictures\SeniorDesign\tempWavs\temp.wav";
-                WaveGenerator wave = new WaveGenerator(WaveExampleType.Decrypt, waveData, (uint)sampleRate);
+                WaveGenerator wave = new WaveGenerator(WaveExampleType.Decrypt, waveData);
+                wave.format.dwSamplesPerSec = (uint)sampleRate;
                 wave.format.dwAvgBytesPerSec = (uint)fmtAvgBPS;
                 wave.format.wBlockAlign = (ushort)blockAlign;
                 wave.format.wBitsPerSample = (ushort)bitDepth;

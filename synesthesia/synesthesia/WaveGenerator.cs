@@ -25,7 +25,7 @@ namespace synesthesia
         public WaveDataChunk data;
 
         // Function overloaded
-        public WaveGenerator(WaveExampleType type, List<short> waveData, uint samplesPerSec)
+        public WaveGenerator(WaveExampleType type, List<short> waveData)
         {
             // Initialize chunks:
             short shor = 1;
@@ -33,14 +33,8 @@ namespace synesthesia
             format = new WaveFormatChunk(shor);
             data = new WaveDataChunk(shor);
 
-            // Number of samples = sample rate * channels
-            format.dwSamplesPerSec = samplesPerSec;
-            uint nNumSamples = format.dwSamplesPerSec * format.wChannels;
-
             // Initialize the 16-bit array
-            // Ensures dataSize is divisible by nNumSamples.
-            int dataSize = waveData.Count + (int)nNumSamples - (waveData.Count % (int)nNumSamples);
-            data.shortArray = new short[dataSize];
+            data.shortArray = new short[waveData.Count];
 
             // Copy the data
             for (int i = 0; i < data.shortArray.Length; i++)
@@ -58,7 +52,7 @@ namespace synesthesia
         }
 
         // Function overloaded
-        public WaveGenerator(WaveExampleType type, List<byte> waveData, uint samplesPerSec)
+        public WaveGenerator(WaveExampleType type, List<byte> waveData)
         {
             // Initialize chunks:
             byte bite = 1;
@@ -66,14 +60,8 @@ namespace synesthesia
             format = new WaveFormatChunk(bite);
             data = new WaveDataChunk(bite);
 
-            // Number of samples = sample rate * channels
-            format.dwSamplesPerSec = samplesPerSec;
-            uint nNumSamples = format.dwSamplesPerSec * format.wChannels;
-
-            // Initialize the 16-bit array
-            // Ensures dataSize is divisible by nNumSamples.
-            int dataSize = waveData.Count + (int)nNumSamples - (waveData.Count % (int)nNumSamples);
-            data.byteArray = new byte [dataSize];
+            // Initialize the 8-bit array
+            data.byteArray = new byte [waveData.Count];
 
             // Copy the data
             for (int i = 0; i < data.byteArray.Length; i++)
@@ -119,7 +107,7 @@ namespace synesthesia
             writer.Write(format.wBitsPerSample);
 
             // Write the data chunk:
-            writer.Write(data.sChunkID.ToCharArray());
+            writer.Write(data.sChunkID.ToCharArray());          // "data"
             writer.Write(data.dwChunkSize);
 
             if (16 == format.wBitsPerSample)

@@ -169,9 +169,16 @@ namespace synesthesia
 
         private void playLoadedWav_Click(object sender, EventArgs e)
         {
-            SoundPlayer player = new SoundPlayer(@wavPath);
-            //MessageBox.Show("Play sound:");
-            player.Play();
+            if (null != wavPath)
+            {
+                SoundPlayer player = new SoundPlayer(@wavPath);
+                //MessageBox.Show("Play sound:");
+                player.Play();
+            }
+            else
+            {
+                MessageBox.Show("Please load a .wav file.");
+            }
         }
 
         private void encodeImage_Click(object sender, EventArgs e)
@@ -219,6 +226,7 @@ namespace synesthesia
                     MessageBox.Show("This file is " + numOfBits + " bits long in data, and " + leastSigBits + 
                         " can be stored in the image.\n" + "Your .wav file will be truncated.");
                     numOfBits = leastSigBits;
+                    dataSize = leastSigBits;
                 }
 
                 // Begin encryption.
