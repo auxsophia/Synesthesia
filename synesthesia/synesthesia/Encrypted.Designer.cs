@@ -39,7 +39,7 @@
             // 
             // saveImage
             // 
-            this.saveImage.Location = new System.Drawing.Point(12, 51);
+            this.saveImage.Location = new System.Drawing.Point(12, 122);
             this.saveImage.Name = "saveImage";
             this.saveImage.Size = new System.Drawing.Size(93, 41);
             this.saveImage.TabIndex = 0;
@@ -83,7 +83,7 @@
             // 
             // decodePlay
             // 
-            this.decodePlay.Location = new System.Drawing.Point(12, 129);
+            this.decodePlay.Location = new System.Drawing.Point(12, 51);
             this.decodePlay.Name = "decodePlay";
             this.decodePlay.Size = new System.Drawing.Size(93, 46);
             this.decodePlay.TabIndex = 5;

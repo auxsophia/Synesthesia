@@ -40,6 +40,8 @@ namespace synesthesia
                 if (c is Button)
                     c.Enabled = true;
             }
+
+
         }
 
         private void saveImage_Click(object sender, EventArgs e)
@@ -204,9 +206,14 @@ namespace synesthesia
             {
                 List<short> waveData = new List<short>();
                 waveData.Add(0);
-                int shift = 15;
+                int shift = 7;
                 int wavIndex = 0;
-                dataSize /= 2;      // Divide by two for shorts.
+                dataSize /= 2;          // Divide by two for shorts (2 bytes long).
+                /*  A short is two bytes, xy. It's stored in wave file in reverse order (little-endian).
+                *   We extract it by first grabbing the lower significant byte with the shift initialized 
+                *   to 7, then grabbing the most significant byte with shift = 15. When the shift = 7
+                *   again, we add to the list and continue.
+                */
                 for (int i = 0; i < encryptedImageBox.Image.Width; i++)
                 {
                     for (int j = 0; j < encryptedImageBox.Image.Height && wavIndex != dataSize; j++)
@@ -223,28 +230,37 @@ namespace synesthesia
                         {
                             waveData[wavIndex] += (short)((pixel.R & zero) << shift);
                             shift--;
-                            if (-1 == shift)
+                            if (7 == shift)
                             {
                                 waveData.Add(0);
                                 wavIndex++;
+                            }
+                            else if (-1 == shift)
+                            {
                                 shift = 15;
                             }
 
                             waveData[wavIndex] += (short)((pixel.G & zero) << shift);
                             shift--;
-                            if (-1 == shift)
+                            if (7 == shift)
                             {
                                 waveData.Add(0);
                                 wavIndex++;
+                            }
+                            else if (-1 == shift)
+                            {
                                 shift = 15;
                             }
 
                             waveData[wavIndex] += (short)((pixel.B & zero) << shift);
                             shift--;
-                            if (-1 == shift)
+                            if (7 == shift)
                             {
                                 waveData.Add(0);
                                 wavIndex++;
+                            }
+                            else if (-1 == shift)
+                            {
                                 shift = 15;
                             }
                         }
