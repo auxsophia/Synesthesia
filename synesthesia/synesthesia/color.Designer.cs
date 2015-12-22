@@ -35,7 +35,6 @@
             this.exactColorLabel = new System.Windows.Forms.Label();
             this.similarColorLabel = new System.Windows.Forms.Label();
             this.regionLabel = new System.Windows.Forms.Label();
-            this.regions = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.originalColorDisplay)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.exactColorDisplay)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.similarColorDisplay)).BeginInit();
@@ -43,79 +42,77 @@
             // 
             // originalColorDisplay
             // 
-            this.originalColorDisplay.Location = new System.Drawing.Point(10, 80);
+            this.originalColorDisplay.Location = new System.Drawing.Point(12, 116);
+            this.originalColorDisplay.Margin = new System.Windows.Forms.Padding(4);
             this.originalColorDisplay.Name = "originalColorDisplay";
-            this.originalColorDisplay.Size = new System.Drawing.Size(100, 100);
+            this.originalColorDisplay.Size = new System.Drawing.Size(120, 120);
             this.originalColorDisplay.TabIndex = 0;
             this.originalColorDisplay.TabStop = false;
             // 
             // exactColorDisplay
             // 
-            this.exactColorDisplay.Location = new System.Drawing.Point(120, 80);
+            this.exactColorDisplay.Location = new System.Drawing.Point(159, 116);
+            this.exactColorDisplay.Margin = new System.Windows.Forms.Padding(4);
             this.exactColorDisplay.Name = "exactColorDisplay";
-            this.exactColorDisplay.Size = new System.Drawing.Size(100, 100);
+            this.exactColorDisplay.Size = new System.Drawing.Size(120, 120);
             this.exactColorDisplay.TabIndex = 1;
             this.exactColorDisplay.TabStop = false;
             // 
             // similarColorDisplay
             // 
-            this.similarColorDisplay.Location = new System.Drawing.Point(230, 80);
+            this.similarColorDisplay.Location = new System.Drawing.Point(306, 116);
+            this.similarColorDisplay.Margin = new System.Windows.Forms.Padding(4);
             this.similarColorDisplay.Name = "similarColorDisplay";
-            this.similarColorDisplay.Size = new System.Drawing.Size(100, 100);
+            this.similarColorDisplay.Size = new System.Drawing.Size(120, 120);
             this.similarColorDisplay.TabIndex = 2;
             this.similarColorDisplay.TabStop = false;
             // 
             // originalColorLabel
             // 
             this.originalColorLabel.AutoSize = true;
-            this.originalColorLabel.Location = new System.Drawing.Point(7, 41);
+            this.originalColorLabel.Location = new System.Drawing.Point(9, 50);
+            this.originalColorLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.originalColorLabel.Name = "originalColorLabel";
-            this.originalColorLabel.Size = new System.Drawing.Size(64, 13);
+            this.originalColorLabel.Size = new System.Drawing.Size(93, 16);
             this.originalColorLabel.TabIndex = 3;
             this.originalColorLabel.Text = "originalColor";
             // 
             // exactColorLabel
             // 
             this.exactColorLabel.AutoSize = true;
-            this.exactColorLabel.Location = new System.Drawing.Point(117, 41);
+            this.exactColorLabel.Location = new System.Drawing.Point(156, 50);
+            this.exactColorLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.exactColorLabel.Name = "exactColorLabel";
-            this.exactColorLabel.Size = new System.Drawing.Size(57, 13);
+            this.exactColorLabel.Size = new System.Drawing.Size(76, 16);
             this.exactColorLabel.TabIndex = 4;
             this.exactColorLabel.Text = "exactColor";
             // 
             // similarColorLabel
             // 
             this.similarColorLabel.AutoSize = true;
-            this.similarColorLabel.Location = new System.Drawing.Point(227, 41);
+            this.similarColorLabel.Location = new System.Drawing.Point(303, 50);
+            this.similarColorLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.similarColorLabel.Name = "similarColorLabel";
-            this.similarColorLabel.Size = new System.Drawing.Size(59, 13);
+            this.similarColorLabel.Size = new System.Drawing.Size(88, 16);
             this.similarColorLabel.TabIndex = 5;
             this.similarColorLabel.Text = "similarColor";
             // 
             // regionLabel
             // 
             this.regionLabel.AutoSize = true;
-            this.regionLabel.Location = new System.Drawing.Point(138, 21);
+            this.regionLabel.Location = new System.Drawing.Point(109, 18);
+            this.regionLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.regionLabel.Name = "regionLabel";
-            this.regionLabel.Size = new System.Drawing.Size(36, 13);
+            this.regionLabel.Size = new System.Drawing.Size(50, 16);
             this.regionLabel.TabIndex = 6;
             this.regionLabel.Text = "region";
             // 
-            // regions
-            // 
-            this.regions.AutoSize = true;
-            this.regions.Location = new System.Drawing.Point(19, 8);
-            this.regions.Name = "regions";
-            this.regions.Size = new System.Drawing.Size(322, 13);
-            this.regions.TabIndex = 7;
-            this.regions.Text = "Color Regions: Black White Red Magenta Yellow Green Blue Cyan";
-            // 
             // color
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(349, 181);
-            this.Controls.Add(this.regions);
+            this.BackColor = System.Drawing.SystemColors.InactiveBorder;
+            this.ClientSize = new System.Drawing.Size(461, 263);
             this.Controls.Add(this.regionLabel);
             this.Controls.Add(this.similarColorLabel);
             this.Controls.Add(this.exactColorLabel);
@@ -123,6 +120,8 @@
             this.Controls.Add(this.similarColorDisplay);
             this.Controls.Add(this.exactColorDisplay);
             this.Controls.Add(this.originalColorDisplay);
+            this.Font = new System.Drawing.Font("Lucida Fax", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "color";
             this.Text = "color";
             ((System.ComponentModel.ISupportInitialize)(this.originalColorDisplay)).EndInit();
@@ -134,7 +133,6 @@
         }
 
         #endregion
-        private System.Windows.Forms.Label regions;
         public System.Windows.Forms.PictureBox originalColorDisplay;
         public System.Windows.Forms.PictureBox exactColorDisplay;
         public System.Windows.Forms.PictureBox similarColorDisplay;

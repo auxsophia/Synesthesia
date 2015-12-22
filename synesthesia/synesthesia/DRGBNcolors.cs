@@ -3,9 +3,10 @@ Author: Elliott Ploutz
 Email: ploutze@unlv.nevada.edu
 
 This class statically creates a table of colors with limited query functionality. For each color,
-a 3D distance is computed. The red, green, and blue values can be mapped to a three dimensional 
-space. By comparing the distance of two points, or two colors, we can say that the two colors
-are in a similar region, thus a similar color.
+a 3D distance is computed relative to a passed color. The red, green, and blue values can be mapped 
+to a three dimensional space. By comparing the distance of two points, or two colors, we can say 
+that the two colors are in a similar region, thus a similar color. The least distance identifies
+that color as most similar.
 
 All rights reserved.
 */
@@ -38,7 +39,7 @@ namespace synesthesia
             }
         }
 
-        // Sorted by distance from the origin.
+        // A modified version of http://cgit.freedesktop.org/xorg/app/rgb/tree/rgb.txt
         public static DRGBName[] colorTable = new DRGBName[603]
         {
             new DRGBName(0, 0, 0, "black"),
@@ -651,7 +652,8 @@ namespace synesthesia
             string region;
             string colorName;
 
-            // Determine the color region among ROYGBIV + WB
+            // Determine the color region among ROYGBIV + White and Black
+            // Evenly divided into 8 smaller cubes.
             if (R <= 128)
             {   // Lower half of the color cube.
                 if (G <= 128)
@@ -705,7 +707,7 @@ namespace synesthesia
 
             Color original = Color.FromArgb(R, G, B);
 
-            // Calculate the distance from two points. 
+            // Calculate the distance from the given color to every other color in the table. 
             double minDistance = 1;
             double cDistance;
             int index = 0;
@@ -714,6 +716,7 @@ namespace synesthesia
             {
                 cDistance = Math.Sqrt(Math.Pow((R - colorTable[i].red), 2) + Math.Pow((G - colorTable[i].green), 2)
                     + Math.Pow((B - colorTable[i].blue), 2));
+
                 if (0.0 == cDistance)
                 {   // Color found! The two points match!
                     colorName = colorTable[i].colorName;
@@ -725,10 +728,12 @@ namespace synesthesia
                     colorFormExact.Show();
                     return;
                 }
+
                 if (0 == i)
                 { // Initialize minDistance
                     minDistance = cDistance;
                 }
+
                 if (cDistance < minDistance)
                 {   // New minimum.
                     minDistance = cDistance;
@@ -736,6 +741,7 @@ namespace synesthesia
                 }
             }
 
+            // Found closest, most similar color.
             Color similar = Color.FromArgb(colorTable[index].red, colorTable[index].green, colorTable[index].blue);
             colorName = colorTable[index].colorName;
 

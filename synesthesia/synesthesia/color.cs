@@ -16,42 +16,43 @@ namespace synesthesia
         {
             InitializeComponent();
 
-            regionLabel.Text = region;
+            regionLabel.Text = "Your color is in the " + region;
 
             if (exact)
             { // Exact color matching.
                 originalColorLabel.Text = "";
                 similarColorLabel.Text = "";
                 exactColorLabel.Text = "Your color is precisely \n" + colorName + "\nRGB = {" + original.R + "," + original.G + "," + original.B + "}.";
-                Bitmap exactImage = new Bitmap(100, 100);
-                for (int i = 0; i < 100; i++)
+                Bitmap exactImage = new Bitmap(120, 120);
+                for (int i = 0; i < 120; i++)
                 {
-                    for (int j = 0; j < 100; j++)
+                    for (int j = 0; j < 120; j++)
                     {
                         exactImage.SetPixel(i, j, original);
                     }
                 }
+                exactColorDisplay.BorderStyle = BorderStyle.FixedSingle;
                 exactColorDisplay.Image = exactImage;
             }
             else
             {
                 exactColorLabel.Text = "";
-                originalColorLabel.Text = "Your original color has \nRGB = {" + original.R + "," + original.G + "," + original.B + "}.";
-                Bitmap originalImage = new Bitmap(100, 100);
-                for (int i = 0; i < 100; i++)
+                originalColorLabel.Text = "Your original \ncolor has \nRGB = {" + original.R + "," + original.G + "," + original.B + "}.";
+                Bitmap originalImage = new Bitmap(120, 120);
+                for (int i = 0; i < 120; i++)
                 {
-                    for (int j = 0; j < 100; j++)
+                    for (int j = 0; j < 120; j++)
                     {
                         originalImage.SetPixel(i, j, original);
                     }
                 }
                 originalColorDisplay.Image = originalImage;
 
-                similarColorLabel.Text = "Your color is most similar \nto " + colorName + " having \nRGB = {" + similar.R + "," + similar.G + "," + similar.B + "}.";
-                Bitmap similarImage = new Bitmap(100, 100);
-                for (int i = 0; i < 100; i++)
+                similarColorLabel.Text = "Your color is most \nsimilar to \n" + colorName + " \nRGB = {" + similar.R + "," + similar.G + "," + similar.B + "}.";
+                Bitmap similarImage = new Bitmap(120, 120);
+                for (int i = 0; i < 120; i++)
                 {
-                    for (int j = 0; j < 100; j++)
+                    for (int j = 0; j < 120; j++)
                     {
                         similarImage.SetPixel(i, j, similar);
                     }
@@ -59,6 +60,5 @@ namespace synesthesia
                 similarColorDisplay.Image = similarImage;
             }
         }
-
     }
 }

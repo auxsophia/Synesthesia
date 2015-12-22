@@ -2,7 +2,17 @@
 Author: Elliott Ploutz
 Email: ploutze@unlv.nevada.edu
 
-This program accepts an image and transforms it into a sound file.
+This application has two functionalities:
+
+Soundage
+Encrypts a .wav file directly into the least significant bits of a pixel. This can then be extracted
+and played from the image. This can aid blind users in identifying images similar to alt-text but 
+with a greater range and more intuitive feel.
+
+ColorFull
+Color blind users can upload an image and simply click on any unknown part of an image to "objectively"
+identify the color. The algorithm uses a 3-dimensional color model of RGB. Eventually, this can help
+some users train to identify colors.
 
 All rights reserved.
 */
@@ -25,19 +35,17 @@ namespace synesthesia
 {
     public partial class Synesthete : Form
     {
-        private Bitmap originalImage;
-        private bool imageLoaded;
-        private bool wavLoaded;
-        private string fileName;            // Stores input from the user to give the wave file a title.
+        private Bitmap originalImage;       // The loaded image.
+        private bool imageLoaded;           // True if an image is loaded.
+        private bool wavLoaded;             // True if a wav file is loaded.
         private string wavPath;             // Stores the .wav file path.
-        private WaveGenerator wave;         // Sound object.
 
         public Synesthete()
         {
             InitializeComponent();
             imageLoaded = false;
             wavLoaded = false;
-            fileName = "";
+            wavPath = "";
         }
 
         private void loadImage_Click(object sender, EventArgs e)
@@ -85,86 +93,6 @@ namespace synesthesia
                 wavPath = openFileDialog.FileName;
                 wavLoaded = true;
             }
-            else
-            {
-                MessageBox.Show("Please load a .wav file.");
-            }
-        }
-
-        private void waveGenerator_Click(object sender, EventArgs e)
-        {
-            if (imageLoaded)
-            {
-                string filePath = @"C:\Users\onlyo\Music\Synesthesia\test.wav";
-
-                SoundPlayer player = new SoundPlayer(filePath);
-                MessageBox.Show("Play sound:");
-                player.Play();
-            }
-            else
-            {
-                int test = 11025;
-                test = test << 3;
-                MessageBox.Show("" + test);
-                MessageBox.Show("Please load an image.");
-            }
-        }
-
-        private void pictureDisplay_Click(object sender, EventArgs e)
-        {
-            if (imageLoaded)
-            {
-                // Get mouse coordinates relative to the pictureBox.
-                MouseEventArgs me = (MouseEventArgs)e;
-                int x = me.Location.X; 
-                int y = me.Location.Y;
-
-                Color pixel = originalImage.GetPixel(x, y);
-                DRGBNcolors color = new DRGBNcolors();
-                color.findColor(pixel.R, pixel.G, pixel.B, this.Location.X + this.pictureDisplay.Location.X + x,
-                    this.Location.Y + this.pictureDisplay.Location.Y + y);
-            }
-        }
-
-        private void pictureDisplay_MouseMove(object sender, EventArgs e)
-        {
-            if (imageLoaded)
-            {
-                // Get mouse coordinates relative to the pictureBox.
-                MouseEventArgs me = (MouseEventArgs)e;
-                int x = me.Location.X;
-                int y = me.Location.Y;
-
-                Color pixel = originalImage.GetPixel(x, y);
-                DRGBNcolors color = new DRGBNcolors();
-
-                Bitmap pixelImage = new Bitmap(20, 20);
-
-                for (int i = 0; i < 20; i++)
-                {
-                    for (int j = 0; j < 20; j++)
-                    {
-                        pixelImage.SetPixel(i, j, pixel);
-                    }
-                }
-
-                pixelBox.Image = pixelImage;
-
-                Point m = new Point(this.pictureDisplay.Location.X + x + 1, this.pictureDisplay.Location.Y + y + 1);
-                pixelBox.Location = m;
-
-                pixelBox.Visible = true;
-            }
-        }
-
-        private void pictureDisplay_MouseLeave(object sender, EventArgs e)
-        {
-            pixelBox.Visible = false;
-        }
-
-        private void exit_Click(object sender, EventArgs e)
-        {
-            Application.Exit();
         }
 
         private void playLoadedWav_Click(object sender, EventArgs e)
@@ -172,7 +100,6 @@ namespace synesthesia
             if (null != wavPath)
             {
                 SoundPlayer player = new SoundPlayer(@wavPath);
-                //MessageBox.Show("Play sound:");
                 player.Play();
             }
             else
@@ -185,9 +112,11 @@ namespace synesthesia
         {
             if (imageLoaded && wavLoaded)
             {
+                // Read the binary file.
                 System.IO.Stream waveFile = new System.IO.FileStream(@wavPath, System.IO.FileMode.Open);
                 BinaryReader reader = new BinaryReader(waveFile);
 
+                // Read the header information.
                 int chunkID = reader.ReadInt32();
                 int fileSize = reader.ReadInt32();
                 int riffType = reader.ReadInt32();
@@ -199,6 +128,12 @@ namespace synesthesia
                 int fmtAvgBPS = reader.ReadInt32();         // Will be written to the image (4 bytes)
                 int fmtBlockAlign = reader.ReadInt16();     // Will be written to the image (2 bytes)
                 int bitDepth = reader.ReadInt16();          // Will be written to the image (2 bytes)
+
+                if (fmtCode != 1)
+                {
+                    MessageBox.Show("Only PCM (format code = 1) sound is supported at this time.");
+                    return;
+                }
 
                 if (channels != 1)
                 {
@@ -223,7 +158,7 @@ namespace synesthesia
 
                 if (numOfBits > leastSigBits)
                 {
-                    MessageBox.Show("This file is " + numOfBits + " bits long in data, and " + leastSigBits + 
+                    MessageBox.Show("This file is " + numOfBits + " bits long in data, and " + leastSigBits +
                         " can be stored in the image.\n" + "Your .wav file will be truncated.");
                     numOfBits = leastSigBits;
                     dataSize = leastSigBits;
@@ -306,7 +241,7 @@ namespace synesthesia
                 int red;
                 int green;
                 int blue;
-                int k = 0;
+                int k = 0;      // Index for wavBits.
                 for (int i = 0; i < originalImage.Width; i++)
                 {
                     for (int j = 0; j < originalImage.Height; j++)
@@ -375,8 +310,90 @@ namespace synesthesia
             }
             else
             {
-                MessageBox.Show("Please load an image and .wav file");
+                MessageBox.Show("Please load an image and .wav file.");
             }
+        }
+
+        // Loads an already encrypted image.
+        private void loadEncrypImage_Click(object sender, EventArgs e)
+        {
+            openFileDialog.Filter = "Image Files(*.jpg;*.jpeg; *.gif; *.bmp; *.png;)|*.jpg;*.jpeg; *.gif; *.bmp; *.png";
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    Form encryptForm = new Encrypted(new Bitmap(openFileDialog.FileName));
+                    encryptForm.Show();
+                }
+                catch
+                {
+                    MessageBox.Show("Can't open file.");
+                }
+            }
+        }
+
+        private void exit_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
+
+        /* Beginning of image interaction functions.*/
+
+        // Clicking on the image pops out a box displaying what the color is or is most similar to.
+        private void pictureDisplay_Click(object sender, EventArgs e)
+        {
+            if (imageLoaded)
+            {
+                // Get mouse coordinates relative to the pictureBox.
+                MouseEventArgs me = (MouseEventArgs)e;
+                int x = me.Location.X;
+                int y = me.Location.Y;
+
+                Color pixel = originalImage.GetPixel(x, y);
+                DRGBNcolors color = new DRGBNcolors();
+                color.findColor(pixel.R, pixel.G, pixel.B, this.Location.X + this.pictureDisplay.Location.X + x,
+                    this.Location.Y + this.pictureDisplay.Location.Y + y);
+            }
+        }
+
+        // Tracks the mouse and magnifies the current pixel.
+        private void pictureDisplay_MouseMove(object sender, EventArgs e)
+        {
+            if (imageLoaded)
+            {
+                // Get mouse coordinates relative to the pictureBox.
+                MouseEventArgs me = (MouseEventArgs)e;
+                int x = me.Location.X;
+                int y = me.Location.Y;
+
+                // Get the color of the pixel clicked.
+                Color pixel = originalImage.GetPixel(x, y);
+                DRGBNcolors color = new DRGBNcolors();
+
+                Bitmap pixelImage = new Bitmap(20, 20);
+
+                // Copy the color to a larger box.
+                for (int i = 0; i < 20; i++)
+                {
+                    for (int j = 0; j < 20; j++)
+                    {
+                        pixelImage.SetPixel(i, j, pixel);
+                    }
+                }
+
+                pixelBox.Image = pixelImage;
+
+                Point m = new Point(this.pictureDisplay.Location.X + x + 1, this.pictureDisplay.Location.Y + y + 1);
+                pixelBox.Location = m;
+
+                pixelBox.Visible = true;
+            }
+        }
+
+        // Hide the box when the mouse leaves the image.
+        private void pictureDisplay_MouseLeave(object sender, EventArgs e)
+        {
+            pixelBox.Visible = false;
         }
     }
 }

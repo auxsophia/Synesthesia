@@ -2,6 +2,8 @@
     Author: Elliott Ploutz
     All rights reserved.
 
+    A "standard" wav file writer/reader.
+
     This class initializes all the classes in Chunks.cs and creates the wave.
 */
 using System;

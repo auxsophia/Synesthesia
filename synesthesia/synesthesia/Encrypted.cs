@@ -1,4 +1,13 @@
-﻿using System;
+﻿/*
+Author: Elliott Ploutz
+Email: ploutze@unlv.nevada.edu
+
+Decrypts the previously encrypted image. Allows the user to save the image for sharing.
+
+All rights reserved.
+*/
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -15,6 +24,8 @@ namespace synesthesia
     public partial class Encrypted : Form
     {
         private string fileName;        // User defined.
+
+        WaveGenerator wave;             // The decrypted audio file.
 
         public Encrypted(Bitmap encryptedImage)
         {
@@ -44,6 +55,7 @@ namespace synesthesia
 
         }
 
+        // NOTE: The filepath needs to be changed for other systems.
         private void saveImage_Click(object sender, EventArgs e)
         {
             try
@@ -57,6 +69,7 @@ namespace synesthesia
             }
         }
 
+        // Gets the user entered text.
         private void fileNameTextBox_TextChanged(object sender, EventArgs e)
         {
             fileName = fileNameTextBox.Text;
@@ -199,7 +212,7 @@ namespace synesthesia
 
             // Grab the first value, which is the most significant bit.
             // Bit shift it to the leftmost byte position, and store it into the data array.
-            // Subtract one from the bit shift counter (meaning divide it by 2).
+            // Move the bit shift counter one to the right (meaning divide it by 2).
             // If the counter is zero, reset to leftmost bit = 1.
 
             if (16 == bitDepth)
@@ -269,7 +282,7 @@ namespace synesthesia
 
                 // Create the .wav file.
                 string filePath16 = @"C:\Users\onlyo\OneDrive\Pictures\SeniorDesign\tempWavs\temp.wav";
-                WaveGenerator wave = new WaveGenerator(WaveExampleType.Decrypt, waveData);
+                wave = new WaveGenerator(WaveExampleType.Decrypt, waveData);
                 wave.format.dwSamplesPerSec = (uint)sampleRate;
                 wave.format.dwAvgBytesPerSec = (uint)fmtAvgBPS;
                 wave.format.wBlockAlign = (ushort)blockAlign;
@@ -328,7 +341,7 @@ namespace synesthesia
 
                 // Create the .wav file.
                 string filePath8 = @"C:\Users\onlyo\OneDrive\Pictures\SeniorDesign\tempWavs\temp.wav";
-                WaveGenerator wave = new WaveGenerator(WaveExampleType.Decrypt, waveData);
+                wave = new WaveGenerator(WaveExampleType.Decrypt, waveData);
                 wave.format.dwSamplesPerSec = (uint)sampleRate;
                 wave.format.dwAvgBytesPerSec = (uint)fmtAvgBPS;
                 wave.format.wBlockAlign = (ushort)blockAlign;
