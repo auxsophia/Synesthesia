@@ -2,6 +2,7 @@
 Created in fulfillment of the fall 2015 senior design course.
 
 Author: **Elliott Ploutz**
+
 Developed using Windows 10 and Microsoft Visual Studio 2015.
 
 This software is licensed under the **GNU GPLv3** (free software license).
@@ -24,6 +25,7 @@ The project rate/sample rate tends to be lower as the data is smaller and can be
 To get .wav files at a smaller (but less quality) rate, record in the above. The sample rate should be set to 11,025. When exporting:
 File > Export > Other Uncompressed Files > Options > WAV Microsoft > Encoding > Unsigned 8 bit PCM.
 
+[Poster display]: https://github.com/auxsophia/Synesthesia/blob/master/poster.PNG "Displayed at the event."
 
 ##Below is the information shown on the poster for the project:
 Visual-Audio Synesthesia
