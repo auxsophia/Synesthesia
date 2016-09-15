@@ -25,10 +25,11 @@ The project rate/sample rate tends to be lower as the data is smaller and can be
 To get .wav files at a smaller (but less quality) rate, record in the above. The sample rate should be set to 11,025. When exporting:
 File > Export > Other Uncompressed Files > Options > WAV Microsoft > Encoding > Unsigned 8 bit PCM.
 
-[Poster display]: https://github.com/auxsophia/Synesthesia/blob/master/poster.PNG "Displayed at the event."
-
 ##Below is the information shown on the poster for the project:
-Visual-Audio Synesthesia
+
+https://raw.githubusercontent.com/auxsophia/Synesthesia/master/poster.PNG
+
+##Visual-Audio Synesthesia
 
 A large part of computer interaction can easily be made accessible for people with visual disabilities. One instance is dealing with images. The current way many blind users interact with images on the web is through the alt-attribute defined in the surrounding text. Screen readers will read the alt-attribute to give the user the semantic content of the image. However, these alt-attributes are webpage dependent and vary greatly between websites. 
 
